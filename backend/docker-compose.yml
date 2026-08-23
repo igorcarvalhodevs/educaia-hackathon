@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16
+    container_name: educaia_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: educaia
+    ports:
+      - "5432:5432"
+    volumes:
+      - educaia_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d educaia"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  educaia_pgdata:
