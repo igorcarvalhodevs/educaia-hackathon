@@ -13,6 +13,11 @@ const router = express.Router();
 router.use(requireAuth);
 
 router.post(
+  "/generate",
+  planningController.generate
+);
+
+router.post(
   "/",
   planningController.create
 );

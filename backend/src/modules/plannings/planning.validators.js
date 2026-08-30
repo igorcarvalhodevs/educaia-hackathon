@@ -63,9 +63,57 @@ const planningSchema = z.object({
     .min(1, "Generated content is required"),
 });
 
+const generatePlanningSchema = z.object({
+  subject: z.string().trim().min(2),
+  grade: z.string().trim().min(1),
+  topic: z.string().trim().min(2),
+
+  duration: z
+    .number()
+    .int()
+    .positive(),
+
+  classSize: z
+    .number()
+    .int()
+    .positive()
+    .optional(),
+
+  learningLevel: z
+    .string()
+    .trim()
+    .optional(),
+
+  classProfile: z
+    .string()
+    .trim()
+    .optional(),
+
+  accessibilityNeeds: z
+    .string()
+    .trim()
+    .optional(),
+
+  resources: z
+    .string()
+    .trim()
+    .optional(),
+
+  internetAccess: z
+    .string()
+    .trim()
+    .optional(),
+
+  methodology: z
+    .string()
+    .trim()
+    .optional(),
+});
+
 const updatePlanningSchema = planningSchema.partial();
 
 module.exports = {
   planningSchema,
   updatePlanningSchema,
+  generatePlanningSchema,
 };
