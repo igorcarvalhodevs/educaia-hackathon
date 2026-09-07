@@ -1,8 +1,4 @@
-const { GoogleGenAI } = require("@google/genai");
-
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
+const geminiProvider = require("./providers/gemini.provider");
 
 function buildPlanningPrompt(data) {
   return `
@@ -28,7 +24,9 @@ Duração total: ${data.duration} minutos
 Quantidade de alunos: ${data.classSize || "Não informado"}
 Nível de aprendizagem: ${data.learningLevel || "Não informado"}
 Perfil da turma: ${data.classProfile || "Não informado"}
-Necessidades de adaptação/acessibilidade: ${data.accessibilityNeeds || "Nenhuma informada"}
+Necessidades de adaptação/acessibilidade: ${
+    data.accessibilityNeeds || "Nenhuma informada"
+  }
 Recursos disponíveis: ${data.resources || "Não informado"}
 Acesso à internet: ${data.internetAccess || "Não informado"}
 Metodologia desejada: ${data.methodology || "Livre"}
@@ -70,12 +68,7 @@ No final, inclua:
 async function generatePlanning(data) {
   const prompt = buildPlanningPrompt(data);
 
-  const response = await ai.models.generateContent({
-    model: "gemini-3.5-flash",
-    contents: prompt,
-  });
-
-  return response.text;
+  return geminiProvider.generateContent(prompt);
 }
 
 module.exports = {
