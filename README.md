@@ -209,29 +209,74 @@ educaia-hackathon/
 │
 ├── backend/
 │   ├── prisma/
+│   │   ├── migrations/
+│   │   │   └── 20260823234217_init/
+│   │   ├── migration_lock.toml
+│   │   └── schema.prisma
+│   │
 │   ├── src/
 │   │   ├── config/
+│   │   │   └── prisma.js
 │   │   ├── middlewares/
-│   │   └── modules/
-│   │       ├── ai/
-│   │       ├── auth/
-│   │       └── plannings/
+│   │   │   └── requireAuth.js
+│   │   ├── modules/
+│   │   │   ├── ai/
+│   │   │   │   ├── providers/
+│   │   │   │   │   └── gemini.provider.js
+│   │   │   │   └── ai.service.js
+│   │   │   ├── auth/
+│   │   │   │   ├── auth.controller.js
+│   │   │   │   ├── auth.routes.js
+│   │   │   │   ├── auth.service.js
+│   │   │   │   └── auth.validators.js
+│   │   │   └── plannings/
+│   │   │       ├── planning.controller.js
+│   │   │       ├── planning.routes.js
+│   │   │       ├── planning.service.js
+│   │   │       └── planning.validators.js
+│   │   ├── app.js
+│   │   └── server.js
+│   │
 │   ├── tests/
+│   │   ├── ai.test.js
+│   │   ├── auth.test.js
+│   │   └── planning.test.js
+│   │
+│   ├── .env.example
+│   ├── .gitignore
 │   ├── docker-compose.yml
-│   └── package.json
+│   ├── package.json
+│   ├── package-lock.json
+│   └── prisma.config.ts
+│
+├── docs/
 │
 ├── mobile/
 │   ├── assets/
 │   ├── src/
 │   │   ├── components/
+│   │   │   └── MarkdownContent.tsx
 │   │   ├── contexts/
+│   │   │   └── AuthContext.tsx
 │   │   ├── navigation/
+│   │   │   └── AppNavigator.tsx
 │   │   ├── screens/
-│   │   ├── services/
-│   │   └── types/
-│   └── package.json
+│   │   │   ├── HomeScreen.tsx
+│   │   │   ├── LoginScreen.tsx
+│   │   │   ├── NewPlanningScreen.tsx
+│   │   │   ├── PlanningDetailScreen.tsx
+│   │   │   └── PlanningsScreen.tsx
+│   │   └── services/
+│   │       └── api.ts
+│   │
+│   ├── .gitignore
+│   ├── app.json
+│   ├── App.tsx
+│   ├── index.ts
+│   ├── package.json
+│   ├── package-lock.json
+│   └── tsconfig.json
 │
-├── docs/
 ├── .gitignore
 └── README.md
 ```
