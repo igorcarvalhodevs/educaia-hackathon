@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import {
   ActivityIndicator,
   Alert,
@@ -14,6 +15,7 @@ import {
 
 import { useAuth } from "../contexts/AuthContext";
 import { api } from "../services/api";
+import { MarkdownContent } from "../components/MarkdownContent";
 
 type GeneratePlanningResponse = {
   generatedContent: string;
@@ -29,32 +31,79 @@ type SavedPlanningResponse = {
   generatedContent: string;
 };
 
+type ViewMode =
+  | "preview"
+  | "edit";
+
 export function NewPlanningScreen() {
   const { token } = useAuth();
 
-  const [subject, setSubject] = useState("");
-  const [grade, setGrade] = useState("");
-  const [topic, setTopic] = useState("");
-  const [duration, setDuration] = useState("");
-  const [classSize, setClassSize] = useState("");
-  const [learningLevel, setLearningLevel] = useState("");
-  const [classProfile, setClassProfile] = useState("");
-  const [accessibilityNeeds, setAccessibilityNeeds] =
-    useState("");
-  const [resources, setResources] = useState("");
-  const [internetAccess, setInternetAccess] = useState("");
-  const [methodology, setMethodology] = useState("");
-
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-
-  const [generatedContent, setGeneratedContent] =
+  const [subject, setSubject] =
     useState("");
 
-  const [disclaimer, setDisclaimer] = useState("");
+  const [grade, setGrade] =
+    useState("");
 
-  const [savedPlanningId, setSavedPlanningId] =
-    useState<string | null>(null);
+  const [topic, setTopic] =
+    useState("");
+
+  const [duration, setDuration] =
+    useState("");
+
+  const [classSize, setClassSize] =
+    useState("");
+
+  const [
+    learningLevel,
+    setLearningLevel,
+  ] = useState("");
+
+  const [
+    classProfile,
+    setClassProfile,
+  ] = useState("");
+
+  const [
+    accessibilityNeeds,
+    setAccessibilityNeeds,
+  ] = useState("");
+
+  const [resources, setResources] =
+    useState("");
+
+  const [
+    internetAccess,
+    setInternetAccess,
+  ] = useState("");
+
+  const [
+    methodology,
+    setMethodology,
+  ] = useState("");
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [saving, setSaving] =
+    useState(false);
+
+  const [
+    generatedContent,
+    setGeneratedContent,
+  ] = useState("");
+
+  const [
+    disclaimer,
+    setDisclaimer,
+  ] = useState("");
+
+  const [
+    savedPlanningId,
+    setSavedPlanningId,
+  ] = useState<string | null>(null);
+
+  const [viewMode, setViewMode] =
+    useState<ViewMode>("preview");
 
   async function handleGenerate() {
     if (
@@ -71,10 +120,13 @@ export function NewPlanningScreen() {
       return;
     }
 
-    const durationNumber = Number(duration);
+    const durationNumber =
+      Number(duration);
 
     if (
-      !Number.isInteger(durationNumber) ||
+      !Number.isInteger(
+        durationNumber
+      ) ||
       durationNumber <= 0
     ) {
       Alert.alert(
@@ -85,13 +137,18 @@ export function NewPlanningScreen() {
       return;
     }
 
-    let classSizeNumber: number | undefined;
+    let classSizeNumber:
+      | number
+      | undefined;
 
     if (classSize.trim()) {
-      classSizeNumber = Number(classSize);
+      classSizeNumber =
+        Number(classSize);
 
       if (
-        !Number.isInteger(classSizeNumber) ||
+        !Number.isInteger(
+          classSizeNumber
+        ) ||
         classSizeNumber <= 0
       ) {
         Alert.alert(
@@ -125,15 +182,24 @@ export function NewPlanningScreen() {
           {
             method: "POST",
             token,
+
             body: JSON.stringify({
-              subject: subject.trim(),
-              grade: grade.trim(),
-              topic: topic.trim(),
-              duration: durationNumber,
+              subject:
+                subject.trim(),
+
+              grade:
+                grade.trim(),
+
+              topic:
+                topic.trim(),
+
+              duration:
+                durationNumber,
 
               ...(classSizeNumber
                 ? {
-                    classSize: classSizeNumber,
+                    classSize:
+                      classSizeNumber,
                   }
                 : {}),
 
@@ -189,6 +255,8 @@ export function NewPlanningScreen() {
       setDisclaimer(
         response.disclaimer
       );
+
+      setViewMode("preview");
     } catch (error) {
       const message =
         error instanceof Error
@@ -214,52 +282,6 @@ export function NewPlanningScreen() {
       return;
     }
 
-    if (
-      !subject.trim() ||
-      !grade.trim() ||
-      !topic.trim() ||
-      !duration.trim()
-    ) {
-      Alert.alert(
-        "Dados incompletos",
-        "Disciplina, série/ano, tema e duração são obrigatórios."
-      );
-
-      return;
-    }
-
-    const durationNumber = Number(duration);
-
-    if (
-      !Number.isInteger(durationNumber) ||
-      durationNumber <= 0
-    ) {
-      Alert.alert(
-        "Duração inválida",
-        "Informe uma duração válida em minutos."
-      );
-
-      return;
-    }
-
-    let classSizeNumber: number | undefined;
-
-    if (classSize.trim()) {
-      classSizeNumber = Number(classSize);
-
-      if (
-        !Number.isInteger(classSizeNumber) ||
-        classSizeNumber <= 0
-      ) {
-        Alert.alert(
-          "Quantidade inválida",
-          "Informe uma quantidade válida de alunos."
-        );
-
-        return;
-      }
-    }
-
     if (!token) {
       Alert.alert(
         "Sessão inválida",
@@ -267,6 +289,18 @@ export function NewPlanningScreen() {
       );
 
       return;
+    }
+
+    const durationNumber =
+      Number(duration);
+
+    let classSizeNumber:
+      | number
+      | undefined;
+
+    if (classSize.trim()) {
+      classSizeNumber =
+        Number(classSize);
     }
 
     try {
@@ -278,15 +312,24 @@ export function NewPlanningScreen() {
           {
             method: "POST",
             token,
+
             body: JSON.stringify({
-              subject: subject.trim(),
-              grade: grade.trim(),
-              topic: topic.trim(),
-              duration: durationNumber,
+              subject:
+                subject.trim(),
+
+              grade:
+                grade.trim(),
+
+              topic:
+                topic.trim(),
+
+              duration:
+                durationNumber,
 
               ...(classSizeNumber
                 ? {
-                    classSize: classSizeNumber,
+                    classSize:
+                      classSizeNumber,
                   }
                 : {}),
 
@@ -341,6 +384,8 @@ export function NewPlanningScreen() {
       setSavedPlanningId(
         response.id
       );
+
+      setViewMode("preview");
 
       Alert.alert(
         "Planejamento salvo",
@@ -535,18 +580,16 @@ export function NewPlanningScreen() {
           style={({ pressed }) => [
             styles.generateButton,
             pressed &&
-              styles.generateButtonPressed,
-            loading &&
+              styles.buttonPressed,
+            fieldsDisabled &&
               styles.buttonDisabled,
           ]}
           onPress={handleGenerate}
-          disabled={loading || saving}
+          disabled={fieldsDisabled}
         >
           {loading ? (
             <View
-              style={
-                styles.loadingButton
-              }
+              style={styles.loadingButton}
             >
               <ActivityIndicator
                 color="#FFFFFF"
@@ -577,9 +620,7 @@ export function NewPlanningScreen() {
 
         {generatedContent ? (
           <View
-            style={
-              styles.resultContainer
-            }
+            style={styles.resultContainer}
           >
             <Text
               style={styles.resultTitle}
@@ -588,33 +629,96 @@ export function NewPlanningScreen() {
             </Text>
 
             <Text
-              style={
-                styles.reviewMessage
-              }
+              style={styles.reviewMessage}
             >
-              Revise e edite o conteúdo
-              antes de salvar.
+              Revise o planejamento antes
+              de utilizá-lo em aula.
             </Text>
 
-            <TextInput
-              style={
-                styles.generatedInput
-              }
-              value={generatedContent}
-              onChangeText={(text) => {
-                setGeneratedContent(text);
-                setSavedPlanningId(null);
-              }}
-              multiline
-              textAlignVertical="top"
-              editable={!saving}
-            />
+            <View
+              style={styles.modeSelector}
+            >
+              <Pressable
+                style={[
+                  styles.modeButton,
+                  viewMode === "preview" &&
+                    styles.modeButtonActive,
+                ]}
+                onPress={() =>
+                  setViewMode("preview")
+                }
+              >
+                <Text
+                  style={[
+                    styles.modeButtonText,
+                    viewMode ===
+                      "preview" &&
+                      styles.modeButtonTextActive,
+                  ]}
+                >
+                  Visualizar
+                </Text>
+              </Pressable>
+
+              <Pressable
+                style={[
+                  styles.modeButton,
+                  viewMode === "edit" &&
+                    styles.modeButtonActive,
+                ]}
+                onPress={() =>
+                  setViewMode("edit")
+                }
+              >
+                <Text
+                  style={[
+                    styles.modeButtonText,
+                    viewMode ===
+                      "edit" &&
+                      styles.modeButtonTextActive,
+                  ]}
+                >
+                  Editar
+                </Text>
+              </Pressable>
+            </View>
+
+            {viewMode === "preview" ? (
+              <View
+                style={
+                  styles.previewContainer
+                }
+              >
+                <MarkdownContent
+                  content={
+                    generatedContent
+                  }
+                />
+              </View>
+            ) : (
+              <TextInput
+                style={
+                  styles.generatedInput
+                }
+                value={generatedContent}
+                onChangeText={(text) => {
+                  setGeneratedContent(
+                    text
+                  );
+
+                  setSavedPlanningId(
+                    null
+                  );
+                }}
+                multiline
+                textAlignVertical="top"
+                editable={!saving}
+              />
+            )}
 
             {disclaimer ? (
               <Text
-                style={
-                  styles.disclaimer
-                }
+                style={styles.disclaimer}
               >
                 {disclaimer}
               </Text>
@@ -626,7 +730,7 @@ export function NewPlanningScreen() {
 
                 pressed &&
                   !savedPlanningId &&
-                  styles.saveButtonPressed,
+                  styles.buttonPressed,
 
                 (saving ||
                   Boolean(
@@ -637,7 +741,9 @@ export function NewPlanningScreen() {
               onPress={handleSave}
               disabled={
                 saving ||
-                Boolean(savedPlanningId)
+                Boolean(
+                  savedPlanningId
+                )
               }
             >
               {saving ? (
@@ -692,13 +798,17 @@ type FieldProps = {
   label: string;
   placeholder: string;
   value: string;
+
   onChangeText: (
     text: string
   ) => void;
+
   multiline?: boolean;
+
   keyboardType?:
     | "default"
     | "number-pad";
+
   editable?: boolean;
 };
 
@@ -807,18 +917,18 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
 
-  generateButtonPressed: {
-    opacity: 0.85,
-  },
-
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-
   generateButtonText: {
     color: "#FFFFFF",
     fontSize: 16,
     fontWeight: "700",
+  },
+
+  buttonPressed: {
+    opacity: 0.85,
+  },
+
+  buttonDisabled: {
+    opacity: 0.55,
   },
 
   loadingButton: {
@@ -838,7 +948,7 @@ const styles = StyleSheet.create({
     marginTop: 32,
     padding: 20,
     backgroundColor: "#FFFFFF",
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: "#D5DAE1",
   },
@@ -853,14 +963,52 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 19,
     opacity: 0.6,
-    marginBottom: 16,
+    marginBottom: 18,
+  },
+
+  modeSelector: {
+    flexDirection: "row",
+    padding: 4,
+    borderRadius: 10,
+    backgroundColor: "#F3F4F6",
+    marginBottom: 18,
+  },
+
+  modeButton: {
+    flex: 1,
+    minHeight: 42,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  modeButtonActive: {
+    backgroundColor: "#111827",
+  },
+
+  modeButtonText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#4B5563",
+  },
+
+  modeButtonTextActive: {
+    color: "#FFFFFF",
+  },
+
+  previewContainer: {
+    backgroundColor: "#F9FAFB",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 12,
+    padding: 18,
   },
 
   generatedInput: {
-    minHeight: 420,
+    minHeight: 440,
     borderWidth: 1,
     borderColor: "#D5DAE1",
-    borderRadius: 10,
+    borderRadius: 12,
     backgroundColor: "#F9FAFB",
     padding: 16,
     fontSize: 15,
@@ -885,10 +1033,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 20,
     marginTop: 24,
-  },
-
-  saveButtonPressed: {
-    opacity: 0.85,
   },
 
   saveButtonText: {

@@ -26,13 +26,24 @@ import {
 
 import { useAuth } from "../contexts/AuthContext";
 import { api } from "../services/api";
-import { RootStackParamList } from "../navigation/AppNavigator";
+
+import {
+  RootStackParamList,
+} from "../navigation/AppNavigator";
+
+import {
+  MarkdownContent,
+} from "../components/MarkdownContent";
 
 type Props =
   NativeStackScreenProps<
     RootStackParamList,
     "PlanningDetail"
   >;
+
+type ViewMode =
+  | "preview"
+  | "edit";
 
 type Planning = {
   id: string;
@@ -64,10 +75,14 @@ export function PlanningDetailScreen({
   const { token } = useAuth();
 
   const [planning, setPlanning] =
-    useState<Planning | null>(null);
+    useState<Planning | null>(
+      null
+    );
 
-  const [generatedContent, setGeneratedContent] =
-    useState("");
+  const [
+    generatedContent,
+    setGeneratedContent,
+  ] = useState("");
 
   const [loading, setLoading] =
     useState(true);
@@ -80,6 +95,9 @@ export function PlanningDetailScreen({
 
   const [edited, setEdited] =
     useState(false);
+
+  const [viewMode, setViewMode] =
+    useState<ViewMode>("preview");
 
   const loadPlanning =
     useCallback(async () => {
@@ -111,6 +129,7 @@ export function PlanningDetailScreen({
         );
 
         setEdited(false);
+        setViewMode("preview");
       } catch (error) {
         const message =
           error instanceof Error
@@ -164,6 +183,7 @@ export function PlanningDetailScreen({
           {
             method: "PUT",
             token,
+
             body: JSON.stringify({
               generatedContent:
                 generatedContent.trim(),
@@ -178,6 +198,7 @@ export function PlanningDetailScreen({
       );
 
       setEdited(false);
+      setViewMode("preview");
 
       Alert.alert(
         "Alterações salvas",
@@ -238,6 +259,7 @@ export function PlanningDetailScreen({
                 [
                   {
                     text: "OK",
+
                     onPress: () => {
                       navigation.goBack();
                     },
@@ -337,33 +359,25 @@ export function PlanningDetailScreen({
         keyboardShouldPersistTaps="handled"
       >
         <Text
-          style={
-            styles.subject
-          }
+          style={styles.subject}
         >
           {planning.subject}
         </Text>
 
         <Text
-          style={
-            styles.title
-          }
+          style={styles.title}
         >
           {planning.topic}
         </Text>
 
         <Text
-          style={
-            styles.grade
-          }
+          style={styles.grade}
         >
           {planning.grade}
         </Text>
 
         <View
-          style={
-            styles.infoRow
-          }
+          style={styles.infoRow}
         >
           <Info
             label="Duração"
@@ -435,9 +449,7 @@ export function PlanningDetailScreen({
         ) : null}
 
         <View
-          style={
-            styles.divider
-          }
+          style={styles.divider}
         />
 
         <Text
@@ -453,26 +465,113 @@ export function PlanningDetailScreen({
             styles.reviewText
           }
         >
-          Você pode revisar e editar o conteúdo
-          abaixo antes de salvar novamente.
+          Consulte o plano formatado
+          ou altere o conteúdo quando
+          necessário.
         </Text>
 
-        <TextInput
+        <View
           style={
-            styles.generatedInput
+            styles.modeSelector
           }
-          value={generatedContent}
-          onChangeText={(text) => {
-            setGeneratedContent(text);
-            setEdited(true);
-          }}
-          multiline
-          textAlignVertical="top"
-          editable={
-            !saving &&
-            !deleting
-          }
-        />
+        >
+          <Pressable
+            style={[
+              styles.modeButton,
+
+              viewMode ===
+                "preview" &&
+                styles.modeButtonActive,
+            ]}
+            onPress={() =>
+              setViewMode("preview")
+            }
+          >
+            <Text
+              style={[
+                styles.modeButtonText,
+
+                viewMode ===
+                  "preview" &&
+                  styles.modeButtonTextActive,
+              ]}
+            >
+              Visualizar
+            </Text>
+          </Pressable>
+
+          <Pressable
+            style={[
+              styles.modeButton,
+
+              viewMode ===
+                "edit" &&
+                styles.modeButtonActive,
+            ]}
+            onPress={() =>
+              setViewMode("edit")
+            }
+          >
+            <Text
+              style={[
+                styles.modeButtonText,
+
+                viewMode ===
+                  "edit" &&
+                  styles.modeButtonTextActive,
+              ]}
+            >
+              Editar
+            </Text>
+          </Pressable>
+        </View>
+
+        {viewMode === "preview" ? (
+          <View
+            style={
+              styles.previewContainer
+            }
+          >
+            <MarkdownContent
+              content={
+                generatedContent
+              }
+            />
+          </View>
+        ) : (
+          <TextInput
+            style={
+              styles.generatedInput
+            }
+            value={
+              generatedContent
+            }
+            onChangeText={(text) => {
+              setGeneratedContent(
+                text
+              );
+
+              setEdited(true);
+            }}
+            multiline
+            textAlignVertical="top"
+            editable={
+              !saving &&
+              !deleting
+            }
+          />
+        )}
+
+        {edited ? (
+          <Text
+            style={
+              styles.pendingMessage
+            }
+          >
+            Existem alterações ainda
+            não salvas.
+          </Text>
+        ) : null}
 
         <Pressable
           style={({ pressed }) => [
@@ -535,7 +634,9 @@ export function PlanningDetailScreen({
             deleting &&
               styles.buttonDisabled,
           ]}
-          onPress={handleDelete}
+          onPress={
+            handleDelete
+          }
           disabled={
             deleting ||
             saving
@@ -554,11 +655,7 @@ export function PlanningDetailScreen({
           )}
         </Pressable>
 
-        <Text
-          style={
-            styles.date
-          }
-        >
+        <Text style={styles.date}>
           Criado em{" "}
           {formatDate(
             planning.createdAt
@@ -580,22 +677,16 @@ function Info({
 }: InfoProps) {
   return (
     <View
-      style={
-        styles.infoBox
-      }
+      style={styles.infoBox}
     >
       <Text
-        style={
-          styles.infoLabel
-        }
+        style={styles.infoLabel}
       >
         {label}
       </Text>
 
       <Text
-        style={
-          styles.infoValue
-        }
+        style={styles.infoValue}
       >
         {value}
       </Text>
@@ -614,9 +705,7 @@ function Detail({
 }: DetailProps) {
   return (
     <View
-      style={
-        styles.detail
-      }
+      style={styles.detail}
     >
       <Text
         style={
@@ -656,208 +745,238 @@ function formatDate(
   );
 }
 
-const styles =
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor:
-        "#F5F7FA",
-    },
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#F5F7FA",
+  },
 
-    content: {
-      padding: 24,
-      paddingBottom: 60,
-    },
+  content: {
+    padding: 24,
+    paddingBottom: 60,
+  },
 
-    centerContainer: {
-      flex: 1,
-      backgroundColor:
-        "#F5F7FA",
-      alignItems: "center",
-      justifyContent:
-        "center",
-      padding: 24,
-    },
+  centerContainer: {
+    flex: 1,
+    backgroundColor: "#F5F7FA",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 24,
+  },
 
-    loadingText: {
-      marginTop: 14,
-      opacity: 0.6,
-    },
+  loadingText: {
+    marginTop: 14,
+    opacity: 0.6,
+  },
 
-    notFoundTitle: {
-      fontSize: 20,
-      fontWeight: "700",
-      marginBottom: 20,
-    },
+  notFoundTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    marginBottom: 20,
+  },
 
-    backButton: {
-      backgroundColor:
-        "#111827",
-      borderRadius: 10,
-      paddingHorizontal: 24,
-      paddingVertical: 14,
-    },
+  backButton: {
+    backgroundColor: "#111827",
+    borderRadius: 10,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+  },
 
-    backButtonText: {
-      color: "#FFFFFF",
-      fontWeight: "700",
-    },
+  backButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+  },
 
-    subject: {
-      fontSize: 14,
-      fontWeight: "700",
-      opacity: 0.6,
-      textTransform:
-        "uppercase",
-      marginBottom: 8,
-    },
+  subject: {
+    fontSize: 14,
+    fontWeight: "700",
+    opacity: 0.6,
+    textTransform: "uppercase",
+    marginBottom: 8,
+  },
 
-    title: {
-      fontSize: 28,
-      fontWeight: "800",
-      marginBottom: 8,
-    },
+  title: {
+    fontSize: 28,
+    fontWeight: "800",
+    marginBottom: 8,
+  },
 
-    grade: {
-      fontSize: 15,
-      opacity: 0.6,
-      marginBottom: 24,
-    },
+  grade: {
+    fontSize: 15,
+    opacity: 0.6,
+    marginBottom: 24,
+  },
 
-    infoRow: {
-      flexDirection: "row",
-      gap: 12,
-      marginBottom: 18,
-    },
+  infoRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 18,
+  },
 
-    infoBox: {
-      flex: 1,
-      backgroundColor:
-        "#FFFFFF",
-      borderWidth: 1,
-      borderColor:
-        "#D5DAE1",
-      borderRadius: 10,
-      padding: 14,
-    },
+  infoBox: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#D5DAE1",
+    borderRadius: 10,
+    padding: 14,
+  },
 
-    infoLabel: {
-      fontSize: 12,
-      opacity: 0.55,
-      marginBottom: 4,
-    },
+  infoLabel: {
+    fontSize: 12,
+    opacity: 0.55,
+    marginBottom: 4,
+  },
 
-    infoValue: {
-      fontSize: 16,
-      fontWeight: "700",
-    },
+  infoValue: {
+    fontSize: 16,
+    fontWeight: "700",
+  },
 
-    detail: {
-      marginBottom: 16,
-    },
+  detail: {
+    marginBottom: 16,
+  },
 
-    detailLabel: {
-      fontSize: 13,
-      fontWeight: "700",
-      marginBottom: 5,
-    },
+  detailLabel: {
+    fontSize: 13,
+    fontWeight: "700",
+    marginBottom: 5,
+  },
 
-    detailValue: {
-      fontSize: 14,
-      lineHeight: 21,
-      opacity: 0.7,
-    },
+  detailValue: {
+    fontSize: 14,
+    lineHeight: 21,
+    opacity: 0.7,
+  },
 
-    divider: {
-      borderTopWidth: 1,
-      borderTopColor:
-        "#D5DAE1",
-      marginVertical: 24,
-    },
+  divider: {
+    borderTopWidth: 1,
+    borderTopColor: "#D5DAE1",
+    marginVertical: 24,
+  },
 
-    sectionTitle: {
-      fontSize: 21,
-      fontWeight: "800",
-      marginBottom: 8,
-    },
+  sectionTitle: {
+    fontSize: 21,
+    fontWeight: "800",
+    marginBottom: 8,
+  },
 
-    reviewText: {
-      fontSize: 13,
-      lineHeight: 19,
-      opacity: 0.6,
-      marginBottom: 16,
-    },
+  reviewText: {
+    fontSize: 13,
+    lineHeight: 19,
+    opacity: 0.6,
+    marginBottom: 16,
+  },
 
-    generatedInput: {
-      minHeight: 440,
-      backgroundColor:
-        "#FFFFFF",
-      borderWidth: 1,
-      borderColor:
-        "#D5DAE1",
-      borderRadius: 12,
-      padding: 16,
-      fontSize: 15,
-      lineHeight: 24,
-    },
+  modeSelector: {
+    flexDirection: "row",
+    padding: 4,
+    borderRadius: 10,
+    backgroundColor: "#E5E7EB",
+    marginBottom: 18,
+  },
 
-    saveButton: {
-      minHeight: 56,
-      backgroundColor:
-        "#111827",
-      borderRadius: 12,
-      alignItems: "center",
-      justifyContent:
-        "center",
-      marginTop: 22,
-    },
+  modeButton: {
+    flex: 1,
+    minHeight: 42,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 
-    saveButtonText: {
-      color: "#FFFFFF",
-      fontWeight: "700",
-      fontSize: 16,
-    },
+  modeButtonActive: {
+    backgroundColor: "#111827",
+  },
 
-    loadingButton: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 10,
-    },
+  modeButtonText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#4B5563",
+  },
 
-    buttonPressed: {
-      opacity: 0.85,
-    },
+  modeButtonTextActive: {
+    color: "#FFFFFF",
+  },
 
-    buttonDisabled: {
-      opacity: 0.55,
-    },
+  previewContainer: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#D5DAE1",
+    borderRadius: 12,
+    padding: 18,
+  },
 
-    deleteButton: {
-      minHeight: 54,
-      borderRadius: 12,
-      borderWidth: 1,
-      borderColor:
-        "#DC2626",
-      alignItems: "center",
-      justifyContent:
-        "center",
-      marginTop: 14,
-    },
+  generatedInput: {
+    minHeight: 440,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#D5DAE1",
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 15,
+    lineHeight: 24,
+  },
 
-    deleteButtonPressed: {
-      opacity: 0.65,
-    },
+  pendingMessage: {
+    fontSize: 12,
+    fontWeight: "600",
+    marginTop: 12,
+    opacity: 0.6,
+  },
 
-    deleteButtonText: {
-      color: "#DC2626",
-      fontWeight: "700",
-      fontSize: 15,
-    },
+  saveButton: {
+    minHeight: 56,
+    backgroundColor: "#111827",
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+  },
 
-    date: {
-      textAlign: "center",
-      fontSize: 12,
-      opacity: 0.45,
-      marginTop: 20,
-    },
-  });
+  saveButtonText: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+    fontSize: 16,
+  },
+
+  loadingButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+
+  buttonPressed: {
+    opacity: 0.85,
+  },
+
+  buttonDisabled: {
+    opacity: 0.55,
+  },
+
+  deleteButton: {
+    minHeight: 54,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#DC2626",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 14,
+  },
+
+  deleteButtonPressed: {
+    opacity: 0.65,
+  },
+
+  deleteButtonText: {
+    color: "#DC2626",
+    fontWeight: "700",
+    fontSize: 15,
+  },
+
+  date: {
+    textAlign: "center",
+    fontSize: 12,
+    opacity: 0.45,
+    marginTop: 20,
+  },
+});
