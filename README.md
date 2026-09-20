@@ -4,6 +4,8 @@ Assistente educacional com Inteligência Artificial para criação, revisão e g
 
 O EducaIA foi desenvolvido como projeto de Hackathon da Pós-Tech, integrando aplicação mobile, API backend, banco de dados relacional, autenticação, Inteligência Artificial generativa e testes automatizados.
 
+---
+
 ## 1. Sobre o projeto
 
 Professores frequentemente precisam elaborar planejamentos de aula considerando não apenas disciplina e conteúdo, mas também características específicas de cada turma, como:
@@ -21,6 +23,8 @@ Professores frequentemente precisam elaborar planejamentos de aula considerando 
 O EducaIA utiliza essas informações para gerar, com apoio de Inteligência Artificial, uma proposta estruturada de planejamento de aula.
 
 A solução foi concebida mantendo o professor no centro do processo decisório: o conteúdo gerado pela IA pode ser revisado e editado antes de ser salvo e também pode ser posteriormente consultado, alterado ou excluído.
+
+---
 
 ## 2. Fluxo principal
 
@@ -47,6 +51,8 @@ Persistência no PostgreSQL
     ↓
 Consulta / edição / exclusão
 ```
+
+---
 
 ## 3. Arquitetura
 
@@ -90,6 +96,8 @@ PostgreSQL 16 executado em container Docker.
 
 O acesso ao banco é realizado através do Prisma ORM.
 
+---
+
 ## 4. Tecnologias
 
 ### Backend
@@ -116,6 +124,8 @@ O acesso ao banco é realizado através do Prisma ORM.
 - React Navigation
 - Expo SecureStore
 
+---
+
 ## 5. Inteligência Artificial
 
 O EducaIA utiliza a API do Google Gemini para geração dos planejamentos pedagógicos.
@@ -127,6 +137,8 @@ A integração com a IA ocorre exclusivamente através do backend.
 A chave da API de Inteligência Artificial não é armazenada nem exposta no aplicativo mobile.
 
 O conteúdo produzido pela IA não é tratado como decisão pedagógica definitiva. O professor pode revisar e modificar o planejamento antes de persistir o resultado.
+
+---
 
 ## 6. Segurança
 
@@ -158,6 +170,8 @@ O backend utiliza Helmet e CORS.
 
 Arquivos `.env` são ignorados pelo Git e não devem ser versionados.
 
+---
+
 ## 7. Funcionalidades
 
 O sistema implementa:
@@ -178,6 +192,8 @@ O sistema implementa:
 - exclusão;
 - controle de propriedade dos recursos;
 - tratamento de falhas do provedor de IA.
+
+---
 
 ## 8. API
 
@@ -201,6 +217,8 @@ DELETE /plannings/:id
 ```
 
 As rotas de planejamento são protegidas por autenticação.
+
+---
 
 ## 9. Estrutura do projeto
 
@@ -250,6 +268,21 @@ educaia-hackathon/
 │   └── prisma.config.ts
 │
 ├── docs/
+│   ├── arquitetura/
+│   │   └── arquitetura-educaia.png
+│   ├── evidencias/
+│   │   ├── 01-testes-cobertura.png
+│   │   ├── 02-planejamento-salvo.jpeg
+│   │   ├── 03-listagem-planejamentos.jpeg
+│   │   ├── 04-detalhe-planejamento.jpeg
+│   │   ├── 05-planejamento-editado.jpeg
+│   │   ├── 06-delete-planejamento-sucesso.jpeg
+│   │   ├── 07-listagem-apos-exclusao.jpeg
+│   │   └── 08-expo-doctor-21-checks.png
+│   ├── videos/
+│   ├── ARQUITETURA.md
+│   ├── RELATORIO_TECNICO.md
+│   └── Relatorio_Final_EducaIA_Hackathon.pdf
 │
 ├── mobile/
 │   ├── assets/
@@ -280,6 +313,8 @@ educaia-hackathon/
 ├── .gitignore
 └── README.md
 ```
+
+---
 
 ## 10. Executando o projeto
 
@@ -358,6 +393,8 @@ Para utilização em dispositivo físico, o computador e o smartphone devem esta
 
 A URL da API utilizada pelo mobile deve apontar para o endereço da máquina que executa o backend.
 
+---
+
 ## 11. Testes
 
 Os testes automatizados do backend utilizam Jest e Supertest.
@@ -393,6 +430,8 @@ Lines      : 83.24%
 
 Os testes abrangem autenticação, autorização, CRUD de planejamentos e integração da camada de IA através de mocks, evitando dependência de chamadas externas durante a suíte automatizada.
 
+---
+
 ## 12. Validação do mobile
 
 Validação TypeScript:
@@ -415,6 +454,8 @@ Resultado validado:
 No issues detected
 ```
 
+---
+
 ## 13. Tratamento de falhas da IA
 
 A integração com Inteligência Artificial é isolada em uma camada própria do backend.
@@ -422,6 +463,8 @@ A integração com Inteligência Artificial é isolada em uma camada própria do
 Em caso de indisponibilidade do provedor, a API trata a exceção e devolve uma resposta controlada ao aplicativo, evitando que uma falha externa comprometa as demais funcionalidades do sistema.
 
 Nos testes automatizados, o provedor externo é simulado por mocks.
+
+---
 
 ## 14. Decisões de arquitetura
 
@@ -441,6 +484,8 @@ Algumas decisões importantes adotadas no projeto:
 
 **Revisão humana:** o resultado da IA permanece editável, preservando a autonomia do professor sobre o planejamento pedagógico.
 
+---
+
 ## 15. Qualidade
 
 Antes da entrega foram realizadas verificações de:
@@ -458,6 +503,8 @@ Antes da entrega foram realizadas verificações de:
 - tratamento de erros;
 - revisão e edição humana do conteúdo.
 
+---
+
 ## 16. Entrega
 
 O repositório contém:
@@ -470,11 +517,49 @@ O repositório contém:
 - integração com IA;
 - documentação técnica.
 
-## 17. Observação sobre credenciais
+---
+
+## 17. Materiais da entrega
+
+Os materiais completos da entrega do EducaIA estão disponíveis na pasta pública do projeto:
+
+### Pasta pública — Google Drive
+
+https://drive.google.com/drive/folders/1AeKKMR_ddpHBCfwZlkfQRqiAk3tyYRAu?usp=sharing
+
+A pasta contém o relatório final, os vídeos da entrega, as evidências de validação e o material de arquitetura do projeto.
+
+### Vídeos
+
+**Pitch — EducaIA | Hackathon Pós-Tech**
+
+https://www.youtube.com/watch?v=TemKiG7MYE4
+
+**Demonstração do MVP — EducaIA | Hackathon Pós-Tech**
+
+https://youtu.be/1Rx7b5ZvjLE
+
+### Repositório
+
+O código-fonte e a documentação técnica estão disponíveis neste repositório:
+
+https://github.com/igorcarvalhodevs/educaia-hackathon
+
+---
+
+## 18. Observação sobre credenciais
 
 Por segurança, credenciais e chaves de API não fazem parte do repositório.
 
 Cada ambiente deve configurar suas próprias variáveis através do arquivo `.env`.
+
+---
+
+## 19. Autoria
+
+Projeto desenvolvido por **Igor de Carvalho Leandro** para o Hackathon da Pós-Tech — FIAP.
+
+GitHub: https://github.com/igorcarvalhodevs
 
 ---
 
